@@ -10,22 +10,22 @@ feature 'Bookmark' do
     scenario 'A user can see bookmarks' do
         connection = PG.connect(dbname: 'bookmark_manager_test')
 
-        # Add the test data
-        connection.exec("INSERT INTO bookmarks VALUES(1, 'http://www.makersacademy.com');")
-        connection.exec("INSERT INTO bookmarks VALUES(2, 'http://www.destroyallsoftware.com');")
-        connection.exec("INSERT INTO bookmarks VALUES(3, 'http://www.google.com');")
-
-        visit('/bookmarks')
-
-        expect(page).to have_content "http://www.makersacademy.com"
-        expect(page).to have_content "http://www.destroyallsoftware.com"
-        expect(page).to have_content "http://www.google.com"
+        Bookmarks.add('http://www.makersacademy.com', 'Makers Academy')
+        Bookmarks.add('http://www.destroyallsoftware.com', 'Destroy All Software')
+        Bookmarks.add('http://www.google.com', 'Google')
+    
+        visit '/bookmarks'
+    
+        expect(page).to have_link('Makers Academy', href: 'http://www.makersacademy.com')
+        expect(page).to have_link('Destroy All Software',  href: 'http://www.destroyallsoftware.com')
+        expect(page).to have_link('Google', href: 'http://www.google.com')
     end
 
     scenario 'add a bookmark to the list' do 
         visit('/bookmarks')
         fill_in('url', :with => "http://www.twitter.com")
+        fill_in('title', with: 'Test Bookmark')
         click_button "submit"
-        expect(page).to have_content "http://www.twitter.com"
+        have_link('Test Bookmark', href: "http://www.twitter.com")
     end
 end
